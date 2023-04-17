@@ -1,8 +1,19 @@
 from stmpy import Driver, Machine
 
+import ipywidgets as widgets
+from IPython.display import display
+
 class Student:
-    def on_init(self):
+    def __init__(self):
         print("Init - Student")
+
+        self.button = widgets.Button(description="Button")
+        self.button.on_click(self.on_button_press)
+
+        display(self.button)
+
+    def on_button_press(self, b):
+        self.stm.send('next_task')
 
     #def ask_question(self):
         #print("What is 1+1?")
@@ -13,13 +24,18 @@ class Student:
         #self.tocks = self.tocks + 1
         #self.mqtt_client.publish("group16 tock", self.ticks)
 
+
+
 class TA:
     def on_init(self):
         print("Init - TA")
 
+    def show_group_progress(self):
+        print("Group progress")
 
 
-# for student
+
+#for student
 s0 = {"source": "initial", "target": "student_display_tasks"}
 
 s1 = {
@@ -32,27 +48,31 @@ s2 = {
     "source": "student_task",
     "target": "student_task",
 }
-s3 = { #check multiple trigger
-    "trigger": "help, t",
+s3 = {
+    "trigger": "help",
     "source": "student_task",
     "target": "student_TA_assistance",
 }
 s4 = {
+    "trigger": "t",
+    "source": "student_task",
+    "target": "student_TA_assistance",
+}
+s5 = {
     "trigger": "deliver",
     "source": "student_task",
     "target": "student_end", #what is end?
 }
-s5 = {
+s6 = {
     "trigger": "back_to_waiting",
     "source": "student_task",
     "target": "student_display_tasks",
 }
-s6 = {
+s7 = {
     "trigger": "help_finished",
     "source": "student_TA_assitance",
     "target": "student_task",
 }
-
 
 
 #for TA
@@ -78,7 +98,7 @@ student_display_tasks = {'name': 'student_display_task',
       'entry': 'show_tasks'
       }
 student_task = {'name': 'student_task',
-      'entry': 'start_task_clock("t", 10000)'
+      'entry': 'start_timer("t", 1000)'
       }
 student_TA_assistance = {'name': 'student_TA_assistance',
       'entry': 'add_group_to_queue'
@@ -97,9 +117,8 @@ TA_assist = {'name': 'TA_assist',
 
 
 student = Student()
-student_machine = Machine(name='stm_student', transitions=[s0, s1, s2, s3, s4, s5, s6], obj=student, states=[student_display_tasks, student_task, student_TA_assistance, student_end])
+student_machine = Machine(name='stm_student', transitions=[s0, s1, s2, s3, s4, s5, s6, s7], obj=student, states=[student_display_tasks, student_task, student_TA_assistance, student_end])
 student.stm = student_machine
-
 
 ta = TA()
 ta_machine = Machine(name='stm_ta', transitions=[t0, t1, t2, t3], obj=ta, states=[TA_waiting, TA_assist])
@@ -109,3 +128,6 @@ driver = Driver()
 driver.add_machine(student_machine)
 driver.add_machine(ta_machine)
 driver.start()
+
+
+driver.stop()
