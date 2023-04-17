@@ -94,3 +94,18 @@ TA_waiting = {'name': 'TA_waiting',
 TA_assist = {'name': 'TA_assist',
       'entry': 'help_group'
       }
+
+
+student = Student()
+student_machine = Machine(name='stm_student', transitions=[s0, s1, s2, s3, s4, s5, s6], obj=student, states=[student_display_tasks, student_task, student_TA_assistance, student_end])
+student.stm = student_machine
+
+
+ta = TA()
+ta_machine = Machine(name='stm_ta', transitions=[t0, t1, t2, t3], obj=ta, states=[TA_waiting, TA_assist])
+ta.stm = ta_machine
+
+driver = Driver()
+driver.add_machine(student_machine)
+driver.add_machine(ta_machine)
+driver.start()
