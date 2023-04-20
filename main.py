@@ -7,7 +7,7 @@ class Student:
     def __init__(self):
         print("Init - Student")
 
-        self.button = widgets.Button(description="Button")
+        self.button = widgets.Button(description="Next task")
         self.button.on_click(self.on_button_press)
 
         display(self.button)
